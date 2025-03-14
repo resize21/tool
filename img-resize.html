@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         /* Global Styles */
+
+        
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -26,6 +28,16 @@
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-bottom: 5px solid #0055cc;
+        }
+          nav a {
+            color: white;
+            margin: 0 15px;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #00BFFF;
         }
 
         h1 {
@@ -155,10 +167,20 @@
     </style>
 </head>
 <body>
+        <!-- Header -->
     <header>
         <h1>Image Resizer Tool</h1>
         <p>Resize and optimize your images for web use with adjustable dimensions, compression levels, and measurement features.</p>
+    
     </header>
+    <!-- Navigation -->
+    <nav>
+        <a href="/tool">Home</a>
+        <a href="#">Image Tools</a>
+        <a href="#">PDF Tools</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+    </nav>
 
     <main>
         <!-- Image Upload Section -->
