@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Resize your images online with our fully responsive Image Resizer tool. Optimize images for web use with adjustable dimensions and compression levels.">
+    <meta name="keywords" content="image resizer, resize images, image optimizer, compress images online">
+    <meta name="author" content="Your Name">
+    <title>Image Resizer Tool - Resize Your Images Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #eef2f3, #d7e1ec);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-bottom: 5px solid #0055cc;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+
+        main {
+            padding: 30px;
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-label {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #2575fc;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: background 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-label:hover {
+            background: #0055cc;
+            transform: translateY(-3px);
+        }
+
+        .resize-controls, .compression-controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .resize-controls label, .compression-controls label {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="number"], input[type="range"] {
+            width: 80%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border 0.3s ease;
+            font-size: 1rem;
+        }
+
+        input[type="number"]:focus, input[type="range"]:focus {
+            border-color: #2575fc;
+            outline: none;
+        }
+
+        .image-preview {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #previewImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #downloadLink {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        #downloadLink:hover {
+            background: #218838;
+            transform: translateY(-3px);
+        }
+
+        .ad-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            font-size: 1.5rem;
+            color: #2575fc;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+    </style>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_SENSE_ID" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <h1>Image Resizer Tool</h1>
+        <p>Resize and optimize your images for web use with adjustable dimensions and compression levels.</p>
+    </header>
+
+    <main>
+        <!-- Image Upload Section -->
+        <section class="upload-section">
+            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+            <label for="imageUpload" class="upload-label">Choose an Image</label>
+        </section>
+
+        <!-- Resize Controls -->
+        <section class="resize-controls">
+            <label for="width">Width (px):</label>
+            <input type="number" id="width" placeholder="Enter width">
+            <label for="height">Height (px):</label>
+            <input type="number" id="height" placeholder="Enter height">
+        </section>
+
+        <!-- Compression Controls -->
+        <section class="compression-controls">
+            <label for="compressionLevel">Compression Level (0.1 to 1.0):</label>
+            <input type="range" id="compressionLevel" min="0.1" max="1" step="0.1" value="0.8">
+            <span id="compressionValue">0.8</span>
+        </section>
+
+        <!-- Image Preview Section -->
+        <section class="image-preview">
+            <h2>Preview</h2>
+            <img id="previewImage" src="#" alt="Preview" style="display: none;">
+        </section>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="loading">Processing Image...</div>
+
+        <!-- Download Section -->
+        <section class="download-section">
+            <a id="downloadLink" download="resized_image.jpg" style="display: none;">Download Resized Image</a>
+        </section>
+
+        <!-- AdSense Ad Unit -->
+        <section class="ad-section">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-YOUR_AD_SENSE_ID"
+                 data-ad-slot="YOUR_AD_SLOT_ID"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Image Resizer Tool. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
+        const compressionLevel = document.getElementById('compressionLevel');
+        const compressionValue = document.getElementById('compressionValue');
+        const previewImage = document.getElementById('previewImage');
+        const downloadLink = document.getElementById('downloadLink');
+        const loadingSpinner = document.getElementById('loading');
+
+        // Handle image upload
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    resizeImage();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle resize and compression
+        widthInput.addEventListener('input', resizeImage);
+        heightInput.addEventListener('input', resizeImage);
+        compressionLevel.addEventListener('input', function() {
+            compressionValue.textContent = this.value;
+            resizeImage();
+        });
+
+        function resizeImage() {
+            loadingSpinner.classList.add('show');
+            setTimeout(() => {
+                if (previewImage.src && previewImage.src !== "#") {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Get user input for width and height
+                    const width = parseInt(widthInput.value) || previewImage.naturalWidth;
+                    const height = parseInt(heightInput.value) || previewImage.naturalHeight;
+
+                    // Set canvas dimensions
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Draw the resized image on the canvas
+                    ctx.drawImage(previewImage, 0, 0, width, height);
+
+                    // Compress the image
+                    const compressedImage = canvas.toDataURL('image/jpeg', parseFloat(compressionLevel.value));
+
+                    // Update the preview image and download link
+                    previewImage.src = compressedImage;
+                    downloadLink.href = compressedImage;
+                    downloadLink.style.display = 'inline-block';
+
+                    loadingSpinner.classList.remove('show');
+                }
+            }, 500);  // Simulate loading delay for better UX
+        }
+    </script>
+</body>
+</html>
