@@ -70,12 +70,12 @@
             transform: translateY(-3px);
         }
 
-        .resize-controls, .compression-controls {
+        .resize-controls, .compression-controls, .unit-controls {
             text-align: center;
             margin-bottom: 30px;
         }
 
-        .resize-controls label, .compression-controls label {
+        .resize-controls label, .compression-controls label, .unit-controls label {
             display: block;
             font-size: 1.1rem;
             margin-bottom: 10px;
@@ -83,7 +83,7 @@
             color: #333;
         }
 
-        input[type="number"], input[type="range"] {
+        input[type="number"], input[type="range"], select {
             width: 80%;
             padding: 12px;
             margin-bottom: 20px;
@@ -93,7 +93,7 @@
             font-size: 1rem;
         }
 
-        input[type="number"]:focus, input[type="range"]:focus {
+        input[type="number"]:focus, input[type="range"]:focus, select:focus {
             border-color: #2575fc;
             outline: none;
         }
@@ -131,9 +131,15 @@
             transform: translateY(-3px);
         }
 
-        .ad-section {
+        .loading {
+            display: none;
             text-align: center;
-            margin-bottom: 30px;
+            font-size: 1.5rem;
+            color: #2575fc;
+        }
+
+        .loading.show {
+            display: block;
         }
 
         footer {
@@ -146,26 +152,12 @@
             width: 100%;
             font-size: 1rem;
         }
-
-        .loading {
-            display: none;
-            text-align: center;
-            font-size: 1.5rem;
-            color: #2575fc;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
     </style>
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_SENSE_ID" crossorigin="anonymous"></script>
 </head>
 <body>
     <header>
         <h1>Image Resizer Tool</h1>
-        <p>Resize and optimize your images for web use with adjustable dimensions and compression levels.</p>
+        <p>Resize and optimize your images for web use with adjustable dimensions, compression levels, and measurement features.</p>
     </header>
 
     <main>
@@ -181,6 +173,8 @@
             <input type="number" id="width" placeholder="Enter width">
             <label for="height">Height (px):</label>
             <input type="number" id="height" placeholder="Enter height">
+            <label for="lockAspectRatio">Lock Aspect Ratio:</label>
+            <input type="checkbox" id="lockAspectRatio">
         </section>
 
         <!-- Compression Controls -->
@@ -188,6 +182,16 @@
             <label for="compressionLevel">Compression Level (0.1 to 1.0):</label>
             <input type="range" id="compressionLevel" min="0.1" max="1" step="0.1" value="0.8">
             <span id="compressionValue">0.8</span>
+        </section>
+
+        <!-- Unit Controls -->
+        <section class="unit-controls">
+            <label for="unit">Measurement Unit:</label>
+            <select id="unit">
+                <option value="px">Pixels (px)</option>
+                <option value="%">Percentage (%)</option>
+                <option value="em">EM</option>
+            </select>
         </section>
 
         <!-- Image Preview Section -->
@@ -202,19 +206,6 @@
         <!-- Download Section -->
         <section class="download-section">
             <a id="downloadLink" download="resized_image.jpg" style="display: none;">Download Resized Image</a>
-        </section>
-
-        <!-- AdSense Ad Unit -->
-        <section class="ad-section">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-YOUR_AD_SENSE_ID"
-                 data-ad-slot="YOUR_AD_SLOT_ID"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
         </section>
     </main>
 
@@ -231,6 +222,10 @@
         const previewImage = document.getElementById('previewImage');
         const downloadLink = document.getElementById('downloadLink');
         const loadingSpinner = document.getElementById('loading');
+        const lockAspectRatio = document.getElementById('lockAspectRatio');
+        const unitSelect = document.getElementById('unit');
+
+        let aspectRatio = 1; // Default aspect ratio
 
         // Handle image upload
         imageUpload.addEventListener('change', function(event) {
@@ -240,6 +235,7 @@
                 reader.onload = function(e) {
                     previewImage.src = e.target.result;
                     previewImage.style.display = 'block';
+                    aspectRatio = previewImage.naturalWidth / previewImage.naturalHeight;
                     resizeImage();
                 };
                 reader.readAsDataURL(file);
@@ -253,6 +249,26 @@
             compressionValue.textContent = this.value;
             resizeImage();
         });
+        unitSelect.addEventListener('change', resizeImage);
+
+        lockAspectRatio.addEventListener('change', function() {
+            if (this.checked) {
+                // Lock Aspect Ratio
+                widthInput.addEventListener('input', lockWidthToAspectRatio);
+                heightInput.addEventListener('input', lockHeightToAspectRatio);
+            } else {
+                widthInput.removeEventListener('input', lockWidthToAspectRatio);
+                heightInput.removeEventListener('input', lockHeightToAspectRatio);
+            }
+        });
+
+        function lockWidthToAspectRatio() {
+            heightInput.value = Math.round(widthInput.value / aspectRatio);
+        }
+
+        function lockHeightToAspectRatio() {
+            widthInput.value = Math.round(heightInput.value * aspectRatio);
+        }
 
         function resizeImage() {
             loadingSpinner.classList.add('show');
@@ -262,8 +278,18 @@
                     const ctx = canvas.getContext('2d');
 
                     // Get user input for width and height
-                    const width = parseInt(widthInput.value) || previewImage.naturalWidth;
-                    const height = parseInt(heightInput.value) || previewImage.naturalHeight;
+                    let width = parseInt(widthInput.value) || previewImage.naturalWidth;
+                    let height = parseInt(heightInput.value) || previewImage.naturalHeight;
+
+                    // Convert units if necessary
+                    const unit = unitSelect.value;
+                    if (unit === "%") {
+                        width = (previewImage.naturalWidth * width) / 100;
+                        height = (previewImage.naturalHeight * height) / 100;
+                    } else if (unit === "em") {
+                        width = (previewImage.naturalWidth * width) / 16; // Assuming 1em = 16px
+                        height = (previewImage.naturalHeight * height) / 16;
+                    }
 
                     // Set canvas dimensions
                     canvas.width = width;
