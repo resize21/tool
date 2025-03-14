@@ -31,6 +31,34 @@
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+         /* Header and Navigation */
+        header {
+            background: linear-gradient(135deg, #007BFF, #00BFFF);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background: #333;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            color: white;
+            margin: 0 15px;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #00BFFF;
+        }
+
 
         /* Main Content */
         main {
@@ -196,6 +224,16 @@
     <header>
         <h1>Image Compression Tool</h1>
         <p>Optimize your images for web use with adjustable compression levels.</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="/tool">Home</a>
+        <a href="#">Image Tools</a>
+        <a href="#">PDF Tools</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+    </nav>
     </header>
 
     <!-- Main Content -->
